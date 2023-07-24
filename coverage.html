@@ -119,7 +119,7 @@
 				
 				<option value="file31">github.com/Checkmarx/kics/pkg/detector/helm/helm_detect.go (87.9%)</option>
 				
-				<option value="file32">github.com/Checkmarx/kics/pkg/detector/helper.go (93.0%)</option>
+				<option value="file32">github.com/Checkmarx/kics/pkg/detector/helper.go (93.8%)</option>
 				
 				<option value="file33">github.com/Checkmarx/kics/pkg/detector/search_line_detector.go (95.0%)</option>
 				
@@ -129,7 +129,7 @@
 				
 				<option value="file36">github.com/Checkmarx/kics/pkg/engine/provider/filesystem.go (71.8%)</option>
 				
-				<option value="file37">github.com/Checkmarx/kics/pkg/engine/secrets/inspector.go (83.5%)</option>
+				<option value="file37">github.com/Checkmarx/kics/pkg/engine/secrets/inspector.go (82.4%)</option>
 				
 				<option value="file38">github.com/Checkmarx/kics/pkg/engine/similarity/similarity_id.go (94.7%)</option>
 				
@@ -145,7 +145,7 @@
 				
 				<option value="file44">github.com/Checkmarx/kics/pkg/kics/service.go (40.3%)</option>
 				
-				<option value="file45">github.com/Checkmarx/kics/pkg/kics/sink.go (42.0%)</option>
+				<option value="file45">github.com/Checkmarx/kics/pkg/kics/sink.go (38.2%)</option>
 				
 				<option value="file46">github.com/Checkmarx/kics/pkg/kuberneter/auth.go (100.0%)</option>
 				
@@ -259,7 +259,7 @@
 				
 				<option value="file101">github.com/Checkmarx/kics/pkg/report/sonarqube.go (90.9%)</option>
 				
-				<option value="file102">github.com/Checkmarx/kics/pkg/resolver/file/file.go (69.4%)</option>
+				<option value="file102">github.com/Checkmarx/kics/pkg/resolver/file/file.go (68.7%)</option>
 				
 				<option value="file103">github.com/Checkmarx/kics/pkg/resolver/helm/helm.go (88.5%)</option>
 				
@@ -2189,13 +2189,13 @@ func (m *Metrics) Stop() <span class="cov3" title="3">{
 // the type of profile
 func getTotal(prof *profile.Profile, idx int) int64 <span class="cov2" title="2">{
         var total, diffTotal int64
-        for _, sample := range prof.Sample </span><span class="cov8" title="31">{
+        for _, sample := range prof.Sample </span><span class="cov8" title="30">{
                 var v int64
                 v = sample.Value[idx]
                 if v &lt; 0 </span><span class="cov0" title="0">{
                         v = -v
                 }</span>
-                <span class="cov8" title="31">total += v
+                <span class="cov8" title="30">total += v
                 if sample.DiffBaseSample() </span><span class="cov0" title="0">{
                         diffTotal += v
                 }</span>
@@ -2220,7 +2220,7 @@ func (m *Metrics) formatTotal(b int64, typeMap map[string]float64, defaultMetric
                 <span class="cov1" title="1">return fmt.Sprintf("%.f%s", metric, defaultMetric)</span>
         }
         <span class="cov6" title="10">for k, u := range typeMap </span><span class="cov10" title="55">{
-                if u &gt;= formatter &amp;&amp; (value/u) &gt;= 1.0 </span><span class="cov7" title="19">{
+                if u &gt;= formatter &amp;&amp; (value/u) &gt;= 1.0 </span><span class="cov7" title="20">{
                         formatter = u
                         mesure = k
                 }</span>
@@ -4885,7 +4885,7 @@ func GetAdjacentVulnLines(idx, adj int, lines []string) *[]model.CodeLine <span 
                 return createVulnLines(1, lines[:adj])</span>
         case len(lines) - 1:<span class="cov3" title="3">
                 // case vulnerability is the last line of the file
-                return createVulnLines(startPos+1, lines[len(lines)-adj:])</span>
+                return createVulnLines(len(lines)-adj+1, lines[len(lines)-adj:])</span>
         default:<span class="cov4" title="4">
                 // case vulnerability is in the middle of the file
                 return createVulnLines(startPos+1, lines[startPos:endPos])</span>
@@ -4907,135 +4907,100 @@ func createVulnLines(startPos int, lines []string) *[]model.CodeLine <span class
 }
 
 // SelectLineWithMinimumDistance will search a map of levenshtein distances to find the minimum distance
-func SelectLineWithMinimumDistance(distances map[int]int, startingFrom int) int <span class="cov5" title="9">{
+func SelectLineWithMinimumDistance(distances map[int]int, startingFrom int) int <span class="cov5" title="8">{
         minDistance, lineOfMinDistance := constants.MaxInteger, startingFrom
-        for line, distance := range distances </span><span class="cov6" title="13">{
-                if distance &lt; minDistance || distance == minDistance &amp;&amp; line &lt; lineOfMinDistance </span><span class="cov6" title="10">{
+        for line, distance := range distances </span><span class="cov6" title="12">{
+                if distance &lt; minDistance || distance == minDistance &amp;&amp; line &lt; lineOfMinDistance </span><span class="cov5" title="9">{
                         minDistance = distance
                         lineOfMinDistance = line
                 }</span>
         }
 
-        <span class="cov5" title="9">return lineOfMinDistance</span>
+        <span class="cov5" title="8">return lineOfMinDistance</span>
 }
 
 // ExtractLineFragment will prepare substr for line detection
-func ExtractLineFragment(line, substr string, key bool) string <span class="cov6" title="11">{
+func ExtractLineFragment(line, substr string, key bool) string <span class="cov5" title="9">{
         // If detecting line by keys only
         idx := strings.Index(line, ":")
         if key &amp;&amp; idx &gt;= 0 </span><span class="cov0" title="0">{
                 return line[:idx]
         }</span>
-        <span class="cov6" title="11">start := strings.Index(line, substr)
+        <span class="cov5" title="9">start := strings.Index(line, substr)
         end := start + len(substr)
 
-        for start &gt;= 0 </span><span class="cov7" title="22">{
-                if line[start] == ' ' </span><span class="cov4" title="6">{
+        for start &gt;= 0 </span><span class="cov7" title="19">{
+                if line[start] == ' ' </span><span class="cov4" title="5">{
                         break</span>
                 }
 
-                <span class="cov7" title="16">start--</span>
+                <span class="cov6" title="14">start--</span>
         }
 
-        <span class="cov6" title="11">for end &lt; len(line) </span><span class="cov7" title="17">{
-                if line[end] == ' ' </span><span class="cov5" title="9">{
+        <span class="cov5" title="9">for end &lt; len(line) </span><span class="cov7" title="15">{
+                if line[end] == ' ' </span><span class="cov5" title="8">{
                         break</span>
                 }
 
-                <span class="cov5" title="8">end++</span>
+                <span class="cov5" title="7">end++</span>
         }
 
-        <span class="cov6" title="11">return removeExtras(line, start, end)</span>
+        <span class="cov5" title="9">return removeExtras(line, start, end)</span>
 }
 
-func removeExtras(result string, start, end int) string <span class="cov6" title="11">{
+func removeExtras(result string, start, end int) string <span class="cov5" title="9">{
         // workaround for selecting yaml keys
-        if result[end-1] == ':' </span><span class="cov3" title="3">{
+        if result[end-1] == ':' </span><span class="cov2" title="2">{
                 end--
         }</span>
 
-        <span class="cov6" title="11">if result[end-1] == '"' </span><span class="cov5" title="7">{
+        <span class="cov5" title="9">if result[end-1] == '"' </span><span class="cov5" title="7">{
                 end--
         }</span>
 
-        <span class="cov6" title="11">if result[start+1] == '"' </span><span class="cov5" title="7">{
+        <span class="cov5" title="9">if result[start+1] == '"' </span><span class="cov5" title="7">{
                 start++
         }</span>
 
-        <span class="cov6" title="11">return result[start+1 : end]</span>
+        <span class="cov5" title="9">return result[start+1 : end]</span>
 }
 
 // DetectCurrentLine uses levenshtein distance to find the most accurate line for the vulnerability
 func (d *DefaultDetectLineResponse) DetectCurrentLine(str1, str2 string, recurseCount int,
-        lines []string) (det *DefaultDetectLineResponse, l []string) <span class="cov5" title="7">{
+        lines []string) (det *DefaultDetectLineResponse, l []string) <span class="cov4" title="6">{
         distances := make(map[int]int)
 
-        for i := d.CurrentLine; i &lt; len(lines); i++ </span><span class="cov10" title="60">{
-                if len(d.ResolvedFiles) &gt; 0 </span><span class="cov3" title="3">{
-                        if res, newLines := d.checkResolvedFile(lines[i], str1, str2, recurseCount); res.FoundAtLeastOne </span><span class="cov0" title="0">{
-                                return res, newLines
-                        }</span>
-                }
-                <span class="cov10" title="60">distances = checkLine(str1, str2, distances, lines[i], i)</span>
-        }
+        for i := d.CurrentLine; i &lt; len(lines); i++ </span><span class="cov10" title="57">{
+                distances = checkLine(str1, str2, distances, lines[i], i)
+        }</span>
 
-        <span class="cov5" title="7">if len(distances) == 0 </span><span class="cov1" title="1">{
+        <span class="cov4" title="6">if len(distances) == 0 </span><span class="cov1" title="1">{
                 d.IsBreak = true
                 return d, lines
         }</span>
 
-        <span class="cov4" title="6">d.CurrentLine = SelectLineWithMinimumDistance(distances, d.CurrentLine)
+        <span class="cov4" title="5">d.CurrentLine = SelectLineWithMinimumDistance(distances, d.CurrentLine)
         d.IsBreak = false
         d.FoundAtLeastOne = true
 
         return d, lines</span>
 }
 
-func checkLine(str1, str2 string, distances map[int]int, line string, i int) map[int]int <span class="cov10" title="60">{
+func checkLine(str1, str2 string, distances map[int]int, line string, i int) map[int]int <span class="cov10" title="57">{
         regex := regexp.MustCompile(`^\s+`)
         line = regex.ReplaceAllString(line, "")
-        if str1 != "" &amp;&amp; str2 != "" &amp;&amp; strings.Contains(line, str1) </span><span class="cov4" title="5">{
+        if str1 != "" &amp;&amp; str2 != "" &amp;&amp; strings.Contains(line, str1) </span><span class="cov4" title="4">{
                 restLine := line[strings.Index(line, str1)+len(str1):]
-                if strings.Contains(restLine, str2) </span><span class="cov4" title="4">{
+                if strings.Contains(restLine, str2) </span><span class="cov3" title="3">{
                         distances[i] = levenshtein.ComputeDistance(ExtractLineFragment(line, str1, false), str1)
                         distances[i] += levenshtein.ComputeDistance(ExtractLineFragment(restLine, str2, false), str2)
                 }</span>
-        } else<span class="cov9" title="55"> if str1 != "" &amp;&amp; strings.Contains(line, str1) </span><span class="cov3" title="3">{
+        } else<span class="cov9" title="53"> if str1 != "" &amp;&amp; strings.Contains(line, str1) </span><span class="cov3" title="3">{
                 distances[i] = levenshtein.ComputeDistance(ExtractLineFragment(line, str1, false), str1)
         }</span>
 
-        <span class="cov10" title="60">return distances</span>
+        <span class="cov10" title="57">return distances</span>
 }
-
-func (d *DefaultDetectLineResponse) checkResolvedFile(line, str1, st2 string,
-        recurseCount int) (det *DefaultDetectLineResponse, l []string) <span class="cov4" title="4">{
-        for key, r := range d.ResolvedFiles </span><span class="cov4" title="4">{
-                if strings.Contains(line, key) &amp;&amp; !strings.Contains(key, "#") </span><span class="cov1" title="1">{
-                        if recurseCount &gt; constants.MaxResolvedFiles </span><span class="cov0" title="0">{
-                                break</span>
-                        }
-                        <span class="cov1" title="1">return d.restore(r.Path).DetectCurrentLine(str1, st2, recurseCount+1, r.Lines)</span>
-                }
-        }
-
-        <span class="cov3" title="3">d.CurrentLine = 0
-        d.IsBreak = false
-        d.FoundAtLeastOne = false
-
-        return d, []string{}</span>
-}
-
-func (d *DefaultDetectLineResponse) restore(file string) *DefaultDetectLineResponse <span class="cov2" title="2">{
-        restore := &amp;DefaultDetectLineResponse{
-                CurrentLine:     0,
-                IsBreak:         d.IsBreak,
-                FoundAtLeastOne: false,
-                ResolvedFile:    file,
-                ResolvedFiles:   d.ResolvedFiles,
-        }
-
-        return restore
-}</span>
 </pre>
 		
 		<pre class="file" id="file33" style="display: none">package detector
@@ -6081,12 +6046,12 @@ func (s *FileSystemSourceProvider) GetSources(ctx context.Context,
 
 func (s *FileSystemSourceProvider) walkDir(ctx context.Context, scanPath string, resolved bool,
         sink Sink, resolverSink ResolverSink, extensions model.Extensions) error <span class="cov1" title="3">{
-        return filepath.Walk(scanPath, func(path string, info os.FileInfo, err error) error </span><span class="cov9" title="30393">{
+        return filepath.Walk(scanPath, func(path string, info os.FileInfo, err error) error </span><span class="cov9" title="30401">{
                 if err != nil </span><span class="cov0" title="0">{
                         return err
                 }</span>
 
-                <span class="cov9" title="30393">if shouldSkip, skipFolder := s.checkConditions(info, extensions, path, resolved); shouldSkip </span><span class="cov9" title="30082">{
+                <span class="cov9" title="30401">if shouldSkip, skipFolder := s.checkConditions(info, extensions, path, resolved); shouldSkip </span><span class="cov9" title="30090">{
                         return skipFolder
                 }</span>
 
@@ -6158,7 +6123,7 @@ func closeFile(file *os.File, info os.FileInfo) <span class="cov6" title="310">{
 }
 
 func (s *FileSystemSourceProvider) checkConditions(info os.FileInfo, extensions model.Extensions,
-        path string, resolved bool) (bool, error) <span class="cov10" title="30396">{
+        path string, resolved bool) (bool, error) <span class="cov10" title="30404">{
         s.mu.RLock()
         defer s.mu.RUnlock()
         if info.IsDir() </span><span class="cov8" title="6748">{
@@ -6173,12 +6138,12 @@ func (s *FileSystemSourceProvider) checkConditions(info os.FileInfo, extensions 
                 <span class="cov1" title="2">return false, nil</span>
         }
 
-        <span class="cov9" title="23648">if f, ok := s.excludes[info.Name()]; ok &amp;&amp; containsFile(f, info) </span><span class="cov0" title="0">{
+        <span class="cov9" title="23656">if f, ok := s.excludes[info.Name()]; ok &amp;&amp; containsFile(f, info) </span><span class="cov0" title="0">{
                 log.Trace().Msgf("File ignored: %s", path)
                 return true, nil
         }</span>
-        <span class="cov9" title="23648">ext := utils.GetExtension(path)
-        if !extensions.Include(ext) </span><span class="cov9" title="23338">{
+        <span class="cov9" title="23656">ext := utils.GetExtension(path)
+        if !extensions.Include(ext) </span><span class="cov9" title="23346">{
                 log.Trace().Msgf("File ignored: %s", path)
                 return true, nil
         }</span>
@@ -6472,7 +6437,7 @@ func compileRegexQueries(
                         return regexQueries, err
                 }</span>
                 <span class="cov7" title="289">regexQueries[i].Regex = compiledRegexp
-                for j := range regexQueries[i].AllowRules </span><span class="cov6" title="176">{
+                for j := range regexQueries[i].AllowRules </span><span class="cov6" title="184">{
                         regexQueries[i].AllowRules[j].Regex = regexp.MustCompile(regexQueries[i].AllowRules[j].RegexStr)
                 }</span>
         }
@@ -6504,12 +6469,12 @@ func isValueInArray(value string, array []string) bool <span class="cov8" title=
         <span class="cov8" title="1182">return false</span>
 }
 
-func (c *Inspector) isSecret(s string, query *RegexQuery) (isSecretRet bool, groups [][]string) <span class="cov10" title="3061">{
+func (c *Inspector) isSecret(s string, query *RegexQuery) (isSecretRet bool, groups [][]string) <span class="cov10" title="2973">{
         if IsAllowRule(s, query, append(query.AllowRules, c.allowRules...)) </span><span class="cov0" title="0">{
                 return false, [][]string{}
         }</span>
 
-        <span class="cov10" title="3061">groups = query.Regex.FindAllStringSubmatch(s, -1)
+        <span class="cov10" title="2973">groups = query.Regex.FindAllStringSubmatch(s, -1)
 
         for _, group := range groups </span><span class="cov3" title="6">{
                 splitedText := strings.Split(s, "\n")
@@ -6531,14 +6496,14 @@ func (c *Inspector) isSecret(s string, query *RegexQuery) (isSecretRet bool, gro
                 <span class="cov0" title="0">groups = append(groups, newGroups...)</span>
         }
 
-        <span class="cov10" title="3061">if len(groups) &gt; 0 </span><span class="cov3" title="6">{
+        <span class="cov10" title="2973">if len(groups) &gt; 0 </span><span class="cov3" title="6">{
                 return true, groups
         }</span>
-        <span class="cov9" title="3055">return false, [][]string{}</span>
+        <span class="cov9" title="2967">return false, [][]string{}</span>
 }
 
 // IsAllowRule check if string matches any of the allow rules for the secret queries
-func IsAllowRule(s string, query *RegexQuery, allowRules []AllowRule) bool <span class="cov10" title="3061">{
+func IsAllowRule(s string, query *RegexQuery, allowRules []AllowRule) bool <span class="cov10" title="2973">{
         regexMatch := query.Regex.FindStringIndex(s)
         if regexMatch != nil </span><span class="cov3" title="6">{
                 allowRuleMatches := AllowRuleMatches(s, append(query.AllowRules, allowRules...))
@@ -6553,21 +6518,21 @@ func IsAllowRule(s string, query *RegexQuery, allowRules []AllowRule) bool <span
                 }
         }
 
-        <span class="cov10" title="3061">return false</span>
+        <span class="cov10" title="2973">return false</span>
 }
 
 // AllowRuleMatches return all the allow rules matches for the secret queries
 func AllowRuleMatches(s string, allowRules []AllowRule) [][]int <span class="cov3" title="6">{
         allowRuleMatches := [][]int{}
-        for i := range allowRules </span><span class="cov6" title="128">{
+        for i := range allowRules </span><span class="cov6" title="132">{
                 allowRuleMatches = append(allowRuleMatches, allowRules[i].Regex.FindAllStringIndex(s, -1)...)
         }</span>
         <span class="cov3" title="6">return allowRuleMatches</span>
 }
 
-func (c *Inspector) checkFileContent(query *RegexQuery, basePaths []string, file *model.FileMetadata) <span class="cov4" title="21">{
+func (c *Inspector) checkFileContent(query *RegexQuery, basePaths []string, file *model.FileMetadata) <span class="cov4" title="28">{
         isSecret, groups := c.isSecret(file.OriginalData, query)
-        if !isSecret </span><span class="cov4" title="20">{
+        if !isSecret </span><span class="cov4" title="27">{
                 return
         }</span>
 
@@ -6651,10 +6616,10 @@ func (c *Inspector) secretsDetectLine(query *RegexQuery, file *model.FileMetadat
 }
 
 func (c *Inspector) checkLineByLine(wg *sync.WaitGroup, query *RegexQuery,
-        basePaths []string, file *model.FileMetadata, lineNumber int, currentLine string) <span class="cov9" title="3040">{
+        basePaths []string, file *model.FileMetadata, lineNumber int, currentLine string) <span class="cov9" title="2945">{
         defer wg.Done()
         isSecret, groups := c.isSecret(currentLine, query)
-        if !isSecret </span><span class="cov9" title="3035">{
+        if !isSecret </span><span class="cov9" title="2940">{
                 return
         }</span>
 
@@ -6760,7 +6725,7 @@ func calculateEntropy(token, charSet string) float64 <span class="cov4" title="1
                 return 0
         }</span>
         <span class="cov3" title="12">charMap := map[rune]float64{}
-        for _, char := range token </span><span class="cov8" title="1234">{
+        for _, char := range token </span><span class="cov9" title="1234">{
                 if strings.Contains(charSet, string(char)) </span><span class="cov8" title="909">{
                         charMap[char]++
                 }</span>
@@ -6813,18 +6778,18 @@ func (c *Inspector) checkContent(i, idx int, basePaths []string, files model.Fil
 
         wg := &amp;sync.WaitGroup{}
         // check file content line by line
-        if c.regexQueries[i].Multiline == (MultilineResult{}) </span><span class="cov7" title="224">{
+        if c.regexQueries[i].Multiline == (MultilineResult{}) </span><span class="cov7" title="217">{
                 lines := (&amp;files[idx]).LinesOriginalData
-                for lineNumber, currentLine := range *lines </span><span class="cov9" title="3040">{
+                for lineNumber, currentLine := range *lines </span><span class="cov9" title="2945">{
                         wg.Add(1)
                         go c.checkLineByLine(wg, &amp;c.regexQueries[i], basePaths, &amp;files[idx], lineNumber, currentLine)
                 }</span>
-                <span class="cov7" title="224">wg.Wait()
+                <span class="cov7" title="217">wg.Wait()
                 return</span>
         }
 
         // check file content as a whole
-        <span class="cov4" title="21">c.checkFileContent(&amp;c.regexQueries[i], basePaths, &amp;files[idx])</span>
+        <span class="cov4" title="28">c.checkFileContent(&amp;c.regexQueries[i], basePaths, &amp;files[idx])</span>
 }
 
 func ignoreLine(lineNumber int, linesIgnore []int) bool <span class="cov2" title="5">{
@@ -6858,27 +6823,27 @@ func hideSecret(linesVuln *model.VulnerabilityLines,
         query *RegexQuery,
         secretTracker *[]SecretTracker) *[]model.CodeLine <span class="cov2" title="3">{
         for idx := range *linesVuln.VulnLines </span><span class="cov1" title="2">{
-                if query.SpecialMask == "all" </span><span class="cov1" title="1">{
+                if query.SpecialMask == "all" &amp;&amp; idx != 0 </span><span class="cov0" title="0">{
                         addToSecretTracker(secretTracker, linesVuln.ResolvedFile, linesVuln.Line, (*linesVuln.VulnLines)[idx].Line, "&lt;SECRET-MASKED-ON-PURPOSE&gt;")
                         (*linesVuln.VulnLines)[idx].Line = "&lt;SECRET-MASKED-ON-PURPOSE&gt;"
                         continue</span>
                 }
 
-                <span class="cov1" title="1">if (*linesVuln.VulnLines)[idx].Line == issueLine </span><span class="cov1" title="1">{
+                <span class="cov1" title="2">if (*linesVuln.VulnLines)[idx].Line == issueLine </span><span class="cov1" title="2">{
                         regex := query.RegexStr
 
-                        if len(query.SpecialMask) &gt; 0 </span><span class="cov1" title="1">{
+                        if len(query.SpecialMask) &gt; 0 </span><span class="cov1" title="2">{
                                 regex = "(.+)" + query.SpecialMask // get key
                         }</span>
 
-                        <span class="cov1" title="1">var re = regexp.MustCompile(regex)
+                        <span class="cov1" title="2">var re = regexp.MustCompile(regex)
                         match := re.FindString(issueLine)
 
-                        if len(query.SpecialMask) &gt; 0 </span><span class="cov1" title="1">{
+                        if len(query.SpecialMask) &gt; 0 </span><span class="cov1" title="2">{
                                 match = issueLine[len(match):] // get value
                         }</span>
 
-                        <span class="cov1" title="1">if match != "" </span><span class="cov1" title="1">{
+                        <span class="cov1" title="2">if match != "" </span><span class="cov1" title="2">{
                                 originalCntAux := (*linesVuln.VulnLines)[idx].Line
                                 (*linesVuln.VulnLines)[idx].Line = strings.Replace(issueLine, match, "&lt;SECRET-MASKED-ON-PURPOSE&gt;", 1)
                                 addToSecretTracker(secretTracker, linesVuln.ResolvedFile, linesVuln.Line, originalCntAux, (*linesVuln.VulnLines)[idx].Line)
@@ -8295,7 +8260,15 @@ func (s *Service) sink(ctx context.Context, filename, scanID string, rc io.Reade
                 return nil
         }</span>
 
-        <span class="cov0" title="0">fileCommands := s.Parser.CommentsCommands(filename, *content)
+        <span class="cov0" title="0">linesResolved := 0
+        for _, ref := range documents.ResolvedFiles </span><span class="cov0" title="0">{
+                if ref.Path != filename </span><span class="cov0" title="0">{
+                        linesResolved += len(*ref.LinesContent)
+                }</span>
+        }
+        <span class="cov0" title="0">s.Tracker.TrackFileFoundCountLines(linesResolved)
+
+        fileCommands := s.Parser.CommentsCommands(filename, *content)
 
         for _, document := range documents.Docs </span><span class="cov0" title="0">{
                 _, err = json.Marshal(document)
@@ -17480,7 +17453,9 @@ func PrintSonarQubeReport(path, filename string, body interface{}) error <span c
 		<pre class="file" id="file102" style="display: none">package file
 
 import (
+        "encoding/json"
         "errors"
+        "fmt"
         "io"
         "os"
         "path/filepath"
@@ -17525,7 +17500,15 @@ func NewResolver(
 
 // Resolve - replace or modifies in-memory content before parsing
 func (r *Resolver) Resolve(fileContent []byte, path string, resolveCount int, resolvedFilesCache map[string]ResolvedFile) []byte <span class="cov5" title="10">{
-        if utils.Contains(filepath.Ext(path), []string{".yml", ".yaml"}) </span><span class="cov4" title="6">{
+        // handle panic during resolve process
+        defer func() </span><span class="cov5" title="10">{
+                if r := recover(); r != nil </span><span class="cov0" title="0">{
+                        err := fmt.Errorf("panic: %v", r)
+                        log.Err(err).Msg("Recovered from panic during file resolve")
+                }</span>
+        }()
+
+        <span class="cov5" title="10">if utils.Contains(filepath.Ext(path), []string{".yml", ".yaml"}) </span><span class="cov4" title="6">{
                 return r.yamlResolve(fileContent, path, resolveCount, resolvedFilesCache)
         }</span>
         <span class="cov3" title="4">var obj any
@@ -17535,14 +17518,14 @@ func (r *Resolver) Resolve(fileContent []byte, path string, resolveCount int, re
         }</span>
 
         // resolve the paths
-        <span class="cov3" title="4">obj, _ = r.walk(fileContent, obj, obj, path, resolveCount, resolvedFilesCache)
+        <span class="cov3" title="4">obj, _ = r.walk(fileContent, obj, obj, path, resolveCount, resolvedFilesCache, false)
 
-        b, err := r.marshler(obj)
-        if err != nil </span><span class="cov0" title="0">{
-                return fileContent
+        b, err := json.MarshalIndent(obj, "", "")
+        if err == nil </span><span class="cov3" title="4">{
+                return b
         }</span>
 
-        <span class="cov3" title="4">return b</span>
+        <span class="cov0" title="0">return fileContent</span>
 }
 
 func (r *Resolver) walk(
@@ -17551,17 +17534,18 @@ func (r *Resolver) walk(
         value any,
         path string,
         resolveCount int,
-        resolvedFilesCache map[string]ResolvedFile) (any, bool) <span class="cov8" title="37">{
+        resolvedFilesCache map[string]ResolvedFile,
+        refBool bool) (any, bool) <span class="cov8" title="37">{
         // go over the value and replace paths with the real content
         switch typedValue := value.(type) </span>{
         case string:<span class="cov6" title="13">
                 if filepath.Base(path) != typedValue </span><span class="cov6" title="13">{
-                        return r.resolvePath(originalFileContent, fullObject, typedValue, path, resolveCount, resolvedFilesCache)
+                        return r.resolvePath(originalFileContent, fullObject, typedValue, path, resolveCount, resolvedFilesCache, refBool)
                 }</span>
                 <span class="cov0" title="0">return value, false</span>
         case []any:<span class="cov1" title="1">
                 for i, v := range typedValue </span><span class="cov1" title="1">{
-                        typedValue[i], _ = r.walk(originalFileContent, fullObject, v, path, resolveCount, resolvedFilesCache)
+                        typedValue[i], _ = r.walk(originalFileContent, fullObject, v, path, resolveCount, resolvedFilesCache, refBool)
                 }</span>
                 <span class="cov1" title="1">return typedValue, false</span>
         case map[string]any:<span class="cov7" title="23">
@@ -17575,7 +17559,7 @@ func (r *Resolver) handleMap(originalFileContent []byte, fullObject interface{},
         resolveCount int, resolvedFilesCache map[string]ResolvedFile) (any, bool) <span class="cov7" title="23">{
         for k, v := range value </span><span class="cov8" title="32">{
                 isRef := strings.Contains(strings.ToLower(k), "$ref")
-                val, res := r.walk(originalFileContent, fullObject, v, path, resolveCount, resolvedFilesCache)
+                val, res := r.walk(originalFileContent, fullObject, v, path, resolveCount, resolvedFilesCache, isRef)
                 // check if it is a ref then add new details
                 if valMap, ok := val.(map[string]interface{}); (ok || !res) &amp;&amp; isRef </span><span class="cov3" title="3">{
                         // Create RefMetadata and add it to the resolved value map
@@ -17705,9 +17689,7 @@ func (r *Resolver) resolveYamlPath(
                 value = checkServerlessFileReference(value)
 
                 path := filepath.Join(filepath.Dir(filePath), value)
-                splitPath = strings.Split(path, "#") // splitting by removing the section to look for in the file
-                // index 0 contains the path of the file while the other indexes contain the sections (e.g. path = "./definitions.json#User/schema")
-                onlyFilePath := splitPath[0]
+                onlyFilePath := getPathFromString(path)
                 _, err := os.Stat(path)
                 if err != nil </span><span class="cov8" title="43">{
                         return *v, false
@@ -17722,11 +17704,15 @@ func (r *Resolver) resolveYamlPath(
                 // Check if file has already been resolved, if not resolve it and save it for future references
                 if _, ok := resolvedFilesCache[filename]; !ok </span><span class="cov3" title="4">{
                         if ret, isError := r.resolveFile(value, onlyFilePath, resolveCount, resolvedFilesCache, true); isError </span><span class="cov0" title="0">{
-                                return ret.(yaml.Node), false
-                        }</span>
+                                if retYaml, yamlNode := ret.(yaml.Node); yamlNode </span><span class="cov0" title="0">{
+                                        return retYaml, false
+                                }</span> else<span class="cov0" title="0"> {
+                                        return *v, false
+                                }</span>
+                        }
                 }
 
-                <span class="cov3" title="4">r.ResolvedFiles[value] = model.ResolvedFile{
+                <span class="cov3" title="4">r.ResolvedFiles[getPathFromString(value)] = model.ResolvedFile{
                         Content:      resolvedFilesCache[filename].fileContent,
                         Path:         path,
                         LinesContent: utils.SplitLines(string(resolvedFilesCache[filename].fileContent)),
@@ -17738,12 +17724,21 @@ func (r *Resolver) resolveYamlPath(
                 if strings.Contains(strings.ToLower(value), "!ref") </span><span class="cov0" title="0">{ // Cloudformation !Ref check
                         return *obj, false
                 }</span>
-                <span class="cov3" title="4">if len(splitPath) == 1 </span><span class="cov3" title="4">{
+                <span class="cov3" title="4">if !strings.Contains(path, "#") </span><span class="cov3" title="4">{
                         return *obj, true
                 }</span>
         }
 
-        <span class="cov0" title="0">if len(splitPath) &gt; 1 </span><span class="cov0" title="0">{
+        <span class="cov0" title="0">return r.returnResolveYamlPathValue(splitPath, sameFileResolve, filePath, originalFileContent, obj, v)</span>
+}
+
+func (r *Resolver) returnResolveYamlPathValue(
+        splitPath []string,
+        sameFileResolve bool,
+        filePath string,
+        originalFileContent []byte,
+        obj, v *yaml.Node) (yaml.Node, bool) <span class="cov0" title="0">{
+        if len(splitPath) &gt; 1 </span><span class="cov0" title="0">{
                 if sameFileResolve </span><span class="cov0" title="0">{
                         r.ResolvedFiles[filePath] = model.ResolvedFile{
                                 Content:      originalFileContent,
@@ -17809,14 +17804,23 @@ func (r *Resolver) resolveFile(
         <span class="cov5" title="7">return nil, false</span>
 }
 
+func getPathFromString(path string) string <span class="cov9" title="54">{
+        lastIndex := strings.LastIndex(path, "#")
+        if lastIndex == -1 </span><span class="cov9" title="53">{
+                return path
+        }</span>
+        <span class="cov1" title="1">return path[:lastIndex]</span>
+}
+
 // isPath returns true if the value is a valid path
 func (r *Resolver) resolvePath(
         originalFileContent []byte,
         fullObject interface{},
         value, filePath string,
         resolveCount int,
-        resolvedFilesCache map[string]ResolvedFile) (any, bool) <span class="cov6" title="13">{
-        if resolveCount &gt; constants.MaxResolvedFiles </span><span class="cov0" title="0">{
+        resolvedFilesCache map[string]ResolvedFile,
+        refBool bool) (any, bool) <span class="cov6" title="13">{
+        if resolveCount &gt; constants.MaxResolvedFiles || (strings.HasPrefix(value, "#") &amp;&amp; !refBool) </span><span class="cov0" title="0">{
                 return value, false
         }</span>
         <span class="cov6" title="13">var splitPath []string
@@ -17846,7 +17850,7 @@ func (r *Resolver) resolvePath(
                         }</span>
                 }
 
-                <span class="cov3" title="3">r.ResolvedFiles[value] = model.ResolvedFile{
+                <span class="cov3" title="3">r.ResolvedFiles[getPathFromString(value)] = model.ResolvedFile{
                         Content:      resolvedFilesCache[onlyFilePath].fileContent,
                         Path:         path,
                         LinesContent: utils.SplitLines(string(resolvedFilesCache[onlyFilePath].fileContent)),
@@ -17859,8 +17863,16 @@ func (r *Resolver) resolvePath(
                         return obj, false
                 }</span>
         }
+        <span class="cov1" title="1">return r.resolvePathReturnValue(value, filePath, splitPath, sameFileResolve, originalFileContent, obj)</span>
+}
 
-        <span class="cov1" title="1">if len(splitPath) &gt; 1 </span><span class="cov1" title="1">{
+func (r *Resolver) resolvePathReturnValue(
+        value, filePath string,
+        splitPath []string,
+        sameFileResolve bool,
+        originalFileContent []byte,
+        obj any) (any, bool) <span class="cov1" title="1">{
+        if len(splitPath) &gt; 1 </span><span class="cov1" title="1">{
                 if sameFileResolve </span><span class="cov0" title="0">{
                         r.ResolvedFiles[filePath] = model.ResolvedFile{
                                 Content:      originalFileContent,
@@ -18688,7 +18700,7 @@ func compileRegexQueries(allRegexQueries []secrets.RegexQuery) ([]secrets.RegexQ
                 }</span>
                 <span class="cov8" title="70">allRegexQueries[i].Regex = compiledRegexp
 
-                for j := range allRegexQueries[i].AllowRules </span><span class="cov7" title="44">{
+                for j := range allRegexQueries[i].AllowRules </span><span class="cov7" title="46">{
                         allRegexQueries[i].AllowRules[j].Regex = regexp.MustCompile(allRegexQueries[i].AllowRules[j].RegexStr)
                 }</span>
         }
