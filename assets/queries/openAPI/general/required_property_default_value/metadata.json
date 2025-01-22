@@ -6,6 +6,8 @@
   "descriptionText": "Required properties receive value from requests, which makes unnecessary declare a default value",
   "descriptionUrl": "https://swagger.io/specification/#schema-object",
   "platform": "OpenAPI",
+  "descriptionID": "84476388",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "f7ab6c83-ef89-40e1-8a99-32e2599fb665",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#schemaObject"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "84476388"
+  "cloudProvider": "common",
+  "cwe": "710"
 }

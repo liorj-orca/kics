@@ -6,6 +6,8 @@
   "descriptionText": "Tag External Documentation URL should be a valid URL",
   "descriptionUrl": "https://swagger.io/specification/#external-documentation-object",
   "platform": "OpenAPI",
+  "descriptionID": "921192fd",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "b4a7d925-738b-4219-99d9-87d6ee262a03",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#externalDocumentationObject"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "921192fd"
+  "cloudProvider": "common",
+  "cwe": "710"
 }

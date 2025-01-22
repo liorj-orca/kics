@@ -81,7 +81,7 @@
           },
           "query_id": {
             "type": "string",
-            "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-4{1}[a-f0-9]{3}-[89ab]{1}[a-f0-9]{3}-[a-f0-9]{12}$"
+            "pattern": "^(?<uuid>[a-f0-9]{8}-[a-f0-9]{4}-4{1}[a-f0-9]{3}-[89ab]{1}[a-f0-9]{3}-[a-f0-9]{12})|(?<cxone>(t:|p:|a:)(\\d{1,20}))$"
           },
           "query_url": {
             "type": "string",
@@ -89,7 +89,7 @@
           },
           "severity": {
             "type": "string",
-            "enum": ["HIGH", "MEDIUM", "LOW", "INFO"]
+            "enum": ["CRITICAL","HIGH", "MEDIUM", "LOW", "INFO"]
           },
           "platform": {
             "type": "string",
@@ -112,6 +112,10 @@
               "ServerlessFW",
               "Terraform"
             ]
+          },
+          "cwe": {
+            "type": "string",
+            "minLength": 0
           },
           "files": {
             "type": "array",
@@ -228,8 +232,12 @@
     },
     "severity_counters": {
       "type": "object",
-      "required": ["HIGH", "MEDIUM", "LOW", "INFO", "TRACE"],
+      "required": ["CRITICAL","HIGH", "MEDIUM", "LOW", "INFO", "TRACE"],
       "properties": {
+        "CRITICAL": {
+          "type": "integer",
+          "minimum": 0
+        },
         "HIGH": {
           "type": "integer",
           "minimum": 0

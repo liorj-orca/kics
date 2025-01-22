@@ -6,5 +6,7 @@
   "descriptionText": "Header Object reference must always point to '#/components/headers'",
   "descriptionUrl": "https://swagger.io/specification/#responses-object",
   "platform": "OpenAPI",
-  "descriptionID": "c3f2fe74"
+  "descriptionID": "c3f2fe74",
+  "cloudProvider": "common",
+  "cwe": "20"
 }

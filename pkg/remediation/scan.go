@@ -6,23 +6,24 @@ import (
 	"errors"
 	"time"
 
-	"github.com/Checkmarx/kics/pkg/engine"
-	"github.com/Checkmarx/kics/pkg/kics"
-	"github.com/Checkmarx/kics/pkg/model"
-	"github.com/Checkmarx/kics/pkg/scan"
+	"github.com/Checkmarx/kics/v2/pkg/engine"
+	"github.com/Checkmarx/kics/v2/pkg/kics"
+	"github.com/Checkmarx/kics/v2/pkg/minified"
+	"github.com/Checkmarx/kics/v2/pkg/model"
+	"github.com/Checkmarx/kics/v2/pkg/scan"
 	"github.com/open-policy-agent/opa/topdown"
 
-	"github.com/Checkmarx/kics/internal/console/flags"
-	"github.com/Checkmarx/kics/internal/tracker"
-	"github.com/Checkmarx/kics/pkg/engine/source"
-	"github.com/Checkmarx/kics/pkg/parser"
-	buildahParser "github.com/Checkmarx/kics/pkg/parser/buildah"
-	dockerParser "github.com/Checkmarx/kics/pkg/parser/docker"
-	protoParser "github.com/Checkmarx/kics/pkg/parser/grpc"
-	jsonParser "github.com/Checkmarx/kics/pkg/parser/json"
-	terraformParser "github.com/Checkmarx/kics/pkg/parser/terraform"
-	yamlParser "github.com/Checkmarx/kics/pkg/parser/yaml"
-	"github.com/Checkmarx/kics/pkg/utils"
+	"github.com/Checkmarx/kics/v2/internal/console/flags"
+	"github.com/Checkmarx/kics/v2/internal/tracker"
+	"github.com/Checkmarx/kics/v2/pkg/engine/source"
+	"github.com/Checkmarx/kics/v2/pkg/parser"
+	buildahParser "github.com/Checkmarx/kics/v2/pkg/parser/buildah"
+	dockerParser "github.com/Checkmarx/kics/v2/pkg/parser/docker"
+	protoParser "github.com/Checkmarx/kics/v2/pkg/parser/grpc"
+	jsonParser "github.com/Checkmarx/kics/v2/pkg/parser/json"
+	terraformParser "github.com/Checkmarx/kics/v2/pkg/parser/terraform"
+	yamlParser "github.com/Checkmarx/kics/v2/pkg/parser/yaml"
+	"github.com/Checkmarx/kics/v2/pkg/utils"
 	"github.com/open-policy-agent/opa/rego"
 	"github.com/rs/zerolog/log"
 )
@@ -36,9 +37,13 @@ type runQueryInfo struct {
 }
 
 // scanTmpFile scans a temporary file against a specific query
-func scanTmpFile(tmpFile, queryID string, remediated []byte, openAPIResolveReferences bool) ([]model.Vulnerability, error) {
+func scanTmpFile(
+	tmpFile, queryID string,
+	remediated []byte,
+	openAPIResolveReferences bool,
+	maxResolverDepth int) ([]model.Vulnerability, error) {
 	// get payload
-	files, err := getPayload(tmpFile, remediated, openAPIResolveReferences)
+	files, err := getPayload(tmpFile, remediated, openAPIResolveReferences, maxResolverDepth)
 
 	if err != nil {
 		log.Err(err)
@@ -81,8 +86,8 @@ func scanTmpFile(tmpFile, queryID string, remediated []byte, openAPIResolveRefer
 }
 
 // getPayload gets the payload of a file
-func getPayload(filePath string, content []byte, openAPIResolveReferences bool) (model.FileMetadatas, error) {
-	ext := utils.GetExtension(filePath)
+func getPayload(filePath string, content []byte, openAPIResolveReferences bool, maxResolverDepth int) (model.FileMetadatas, error) {
+	ext, _ := utils.GetExtension(filePath)
 	var p []*parser.Parser
 	var err error
 
@@ -116,7 +121,8 @@ func getPayload(filePath string, content []byte, openAPIResolveReferences bool) 
 		return model.FileMetadatas{}, errors.New("failed to get parser")
 	}
 
-	documents, er := p[0].Parse(filePath, content, openAPIResolveReferences)
+	isMinified := minified.IsMinified(filePath, content)
+	documents, er := p[0].Parse(filePath, content, openAPIResolveReferences, isMinified, maxResolverDepth)
 
 	if er != nil {
 		log.Error().Msgf("failed to parse file '%s': %s", filePath, er)
@@ -138,6 +144,7 @@ func getPayload(filePath string, content []byte, openAPIResolveReferences bool) 
 			Commands:          p[0].CommentsCommands(filePath, content),
 			OriginalData:      string(content),
 			LinesOriginalData: utils.SplitLines(string(content)),
+			IsMinified:        documents.IsMinified,
 		}
 
 		files = append(files, file)
@@ -174,7 +181,9 @@ func runQuery(r *runQueryInfo) []model.Vulnerability {
 		Files:         r.files.ToMap(),
 	}
 
-	decoded, err := r.inspector.DecodeQueryResults(queryCtx, results)
+	timeoutCtxToDecode, cancelDecode := context.WithTimeout(context.Background(), queryExecTimeout)
+	defer cancelDecode()
+	decoded, err := r.inspector.DecodeQueryResults(queryCtx, timeoutCtxToDecode, results)
 
 	if err != nil {
 		log.Err(err)
@@ -234,7 +243,10 @@ func initScan(queryID string) (*engine.Inspector, error) {
 		&queryFilter,
 		make(map[string]bool),
 		c.ScanParams.QueryExecTimeout,
+		c.ScanParams.UseOldSeverities,
 		false,
+		c.ScanParams.ParallelScanFlag,
+		c.ScanParams.KicsComputeNewSimID,
 	)
 
 	return inspector, err

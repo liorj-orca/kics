@@ -6,6 +6,8 @@
   "descriptionText": "The property 'required' determines whether the parameter is mandatory. If the parameter location is 'path', this property is required and its value must be true.",
   "descriptionUrl": "https://swagger.io/specification/#parameter-object",
   "platform": "OpenAPI",
+  "descriptionID": "977266c3",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "ccd0613f-cb77-4684-a892-183bd2674d12",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#parameterObject"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "977266c3"
+  "cloudProvider": "common",
+  "cwe": "665"
 }

@@ -1,4 +1,4 @@
-FROM golang:1.21.5-alpine as build_env
+FROM checkmarx/go:1.23.4-r0@sha256:07aa6232e1255b14e2cbde76323059af733b5017890d64670b57d51b33744220 AS build_env
 
 # Copy the source from the current directory to the Working Directory inside the container
 WORKDIR /app
@@ -21,57 +21,31 @@ RUN go mod download -x
 COPY . .
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
-    -ldflags "-s -w -X github.com/Checkmarx/kics/internal/constants.Version=${VERSION} -X github.com/Checkmarx/kics/internal/constants.SCMCommit=${COMMIT} -X github.com/Checkmarx/kics/internal/constants.SentryDSN=${SENTRY_DSN} -X github.com/Checkmarx/kics/internal/constants.BaseURL=${DESCRIPTIONS_URL}" \
+RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
+    -ldflags "-s -w -X github.com/Checkmarx/kics/v2/internal/constants.Version=${VERSION} -X github.com/Checkmarx/kics/v2/internal/constants.SCMCommit=${COMMIT} -X github.com/Checkmarx/kics/v2/internal/constants.SentryDSN=${SENTRY_DSN} -X github.com/Checkmarx/kics/v2/internal/constants.BaseURL=${DESCRIPTIONS_URL}" \
     -a -installsuffix cgo \
     -o bin/kics cmd/console/main.go
-USER Checkmarx
-
-# Healthcheck the container
-HEALTHCHECK CMD wget -q --method=HEAD localhost/system-status.txt
 
 # Runtime image
 # Ignore no User Cmd since KICS container is stopped afer scan
 # kics-scan ignore-line
-FROM alpine:3.18
+FROM checkmarx/git:2.47.0-r0@sha256:2f3ce1eb50ac04e3a9930a5f71526e3e3e22cd09964a9a2aab9d4c3787f25b21
 
 ENV TERM xterm-256color
-
-# Install additional components from Alpine
-Run apk update --no-cache \
-    && apk add --no-cache \
-    gcompat~=1.1.0 \
-    git~=2.40
-
-# Install Terraform and Terraform plugins
-RUN wget https://releases.hashicorp.com/terraform/1.5.6/terraform_1.5.6_linux_amd64.zip \
-    && unzip terraform_1.5.6_linux_amd64.zip && rm terraform_1.5.6_linux_amd64.zip \
-    && mv terraform /usr/bin/terraform \
-    && wget https://releases.hashicorp.com/terraform-provider-azurerm/3.71.0/terraform-provider-azurerm_3.71.0_linux_amd64.zip \
-    && wget https://releases.hashicorp.com/terraform-provider-aws/3.72.0/terraform-provider-aws_3.72.0_linux_amd64.zip \
-    && wget https://releases.hashicorp.com/terraform-provider-google/4.32.0/terraform-provider-google_4.32.0_linux_amd64.zip \
-    && unzip terraform-provider-azurerm_3.71.0_linux_amd64.zip && rm terraform-provider-azurerm_3.71.0_linux_amd64.zip\
-    && unzip terraform-provider-google_4.32.0_linux_amd64.zip && rm terraform-provider-google_4.32.0_linux_amd64.zip \
-    && unzip terraform-provider-aws_3.72.0_linux_amd64.zip && rm terraform-provider-aws_3.72.0_linux_amd64.zip \
-    && mkdir ~/.terraform.d && mkdir ~/.terraform.d/plugins && mkdir ~/.terraform.d/plugins/linux_amd64 && mv terraform-provider-aws_v3.72.0_x5 terraform-provider-google_v4.32.0_x5 terraform-provider-azurerm_v3.71.0_x5 ~/.terraform.d/plugins/linux_amd64
-
-# Install Terraformer
-RUN wget https://github.com/GoogleCloudPlatform/terraformer/releases/download/0.8.24/terraformer-all-linux-amd64 \
-    && chmod +x terraformer-all-linux-amd64 \
-    && mv terraformer-all-linux-amd64 /usr/bin/terraformer
-
 
 # Copy built binary to the runtime container
 # Vulnerability fixed in latest version of KICS remove when gh actions version is updated
 # kics-scan ignore-line
 COPY --from=build_env /app/bin/kics /app/bin/kics
 COPY --from=build_env /app/assets/queries /app/bin/assets/queries
+COPY --from=build_env /app/assets/cwe_csv /app/bin/assets/cwe_csv
 COPY --from=build_env /app/assets/libraries/* /app/bin/assets/libraries/
 
 WORKDIR /app/bin
 
+USER 65532
+
 # Healthcheck the container
-HEALTHCHECK CMD wget -q --method=HEAD localhost/system-status.txt
 ENV PATH $PATH:/app/bin
 
 # Command to run the executable

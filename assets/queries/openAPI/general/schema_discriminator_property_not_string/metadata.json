@@ -6,6 +6,8 @@
   "descriptionText": "Schema discriminator property should be a string",
   "descriptionUrl": "https://swagger.io/specification/#discriminator-object",
   "platform": "OpenAPI",
+  "descriptionID": "201104fd",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "949376f1-f560-4c6d-a016-63424ca931bb",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#schema-object"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "201104fd"
+  "cloudProvider": "common",
+  "cwe": "20"
 }

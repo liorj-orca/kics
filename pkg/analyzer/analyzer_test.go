@@ -20,6 +20,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 		wantErr              bool
 		gitIgnoreFileName    string
 		excludeGitIgnore     bool
+		MaxFileSize          int
 	}{
 		{
 			name:      "analyze_test_dir_single_path",
@@ -28,7 +29,6 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantExclude: []string{
 				filepath.FromSlash("../../test/fixtures/analyzer_test/not_openapi.json"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/pnpm-lock.yaml"),
-				filepath.FromSlash("../../test/fixtures/analyzer_test/dead_symlink"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/undetected.yaml")},
 			typesFromFlag:        []string{""},
 			excludeTypesFromFlag: []string{""},
@@ -36,6 +36,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "analyze_test_helm_single_path",
@@ -48,6 +49,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_multiple_path",
@@ -63,6 +65,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_multi_checks_path",
@@ -77,6 +80,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_not_openapi",
@@ -91,6 +95,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_error_path",
@@ -105,6 +110,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              true,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_unwanted_path",
@@ -119,6 +125,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_tfplan",
@@ -133,6 +140,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_considering_ignore_file",
@@ -140,7 +148,8 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				filepath.FromSlash("../../test/fixtures/gitignore"),
 			},
 			wantTypes: []string{"kubernetes"},
-			wantExclude: []string{filepath.FromSlash("../../test/fixtures/gitignore/positive.dockerfile"),
+			wantExclude: []string{
+				filepath.FromSlash("../../test/fixtures/gitignore/positive.dockerfile"),
 				filepath.FromSlash("../../test/fixtures/gitignore/secrets.tf"),
 				filepath.FromSlash("../../test/fixtures/gitignore/gitignore"),
 			},
@@ -150,6 +159,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "gitignore",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_not_considering_ignore_file",
@@ -164,6 +174,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "gitignore",
 			excludeGitIgnore:     true,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_knative_file",
@@ -178,6 +189,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_servelessfw_file",
@@ -192,6 +204,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name: "analyze_test_undetected_yaml",
@@ -206,6 +219,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:      "analyze_test_dir_single_path_types_value",
@@ -215,7 +229,6 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				filepath.FromSlash("../../test/fixtures/analyzer_test/azureResourceManager.json"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/cloudformation.yaml"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/crossplane.yaml"),
-				filepath.FromSlash("../../test/fixtures/analyzer_test/dead_symlink"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/docker-compose.yaml"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/gdm.yaml"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/helm/Chart.yaml"),
@@ -237,6 +250,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:      "analyze_test_dir_single_path_exclude_type_value",
@@ -247,7 +261,6 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				filepath.FromSlash("../../test/fixtures/analyzer_test/not_openapi.json"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/undetected.yaml"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/pnpm-lock.yaml"),
-				filepath.FromSlash("../../test/fixtures/analyzer_test/dead_symlink"),
 			},
 			typesFromFlag:        []string{""},
 			excludeTypesFromFlag: []string{"ansible", "pulumi"},
@@ -255,6 +268,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:      "analyze_test_ignore_pnpm_lock_yaml_file",
@@ -263,7 +277,6 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantExclude: []string{
 				filepath.FromSlash("../../test/fixtures/analyzer_test/pnpm-lock.yaml"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/not_openapi.json"),
-				filepath.FromSlash("../../test/fixtures/analyzer_test/dead_symlink"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/undetected.yaml"),
 			},
 			typesFromFlag:        []string{""},
@@ -272,6 +285,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:      "analyze_test_ignore_dead_symlink",
@@ -280,7 +294,6 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantExclude: []string{
 				filepath.FromSlash("../../test/fixtures/analyzer_test/pnpm-lock.yaml"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/not_openapi.json"),
-				filepath.FromSlash("../../test/fixtures/analyzer_test/dead_symlink"),
 				filepath.FromSlash("../../test/fixtures/analyzer_test/undetected.yaml"),
 			},
 			typesFromFlag:        []string{""},
@@ -289,6 +302,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "analyze_test_ansible_host",
@@ -301,6 +315,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "analyze_test_ansible_cfg",
@@ -313,6 +328,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "analyze_test_ansible_conf",
@@ -325,6 +341,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "analyze_test_cicd_github",
@@ -337,6 +354,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "ansible_host",
@@ -349,6 +367,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "ansible_by_children",
@@ -361,6 +380,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 		{
 			name:                 "ansible_by_host",
@@ -373,6 +393,48 @@ func TestAnalyzer_Analyze(t *testing.T) {
 			wantErr:              false,
 			gitIgnoreFileName:    "",
 			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
+		},
+		{
+			name:      "analyze_test_file_size_too_big",
+			paths:     []string{filepath.FromSlash("../../test/fixtures/max_file_size")},
+			wantTypes: []string{},
+			wantExclude: []string{
+				filepath.FromSlash("../../test/fixtures/max_file_size/sample.tf"),
+			},
+			typesFromFlag:        []string{""},
+			excludeTypesFromFlag: []string{""},
+			wantLOC:              0,
+			wantErr:              false,
+			gitIgnoreFileName:    "",
+			excludeGitIgnore:     false,
+			MaxFileSize:          3,
+		},
+		{
+			name:                 "analyze_ansible_by_path",
+			paths:                []string{filepath.FromSlash("../../test/fixtures/ansible_project_path")},
+			wantTypes:            []string{"ansible"},
+			wantExclude:          []string{},
+			typesFromFlag:        []string{""},
+			excludeTypesFromFlag: []string{""},
+			wantLOC:              54,
+			wantErr:              false,
+			gitIgnoreFileName:    "",
+			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
+		},
+		{
+			name:                 "analyze_test_bicep",
+			paths:                []string{filepath.FromSlash("../../test/fixtures/bicep_test")},
+			wantTypes:            []string{"bicep"},
+			wantExclude:          []string{},
+			typesFromFlag:        []string{""},
+			excludeTypesFromFlag: []string{""},
+			wantLOC:              697,
+			wantErr:              false,
+			gitIgnoreFileName:    "",
+			excludeGitIgnore:     false,
+			MaxFileSize:          -1,
 		},
 	}
 
@@ -387,6 +449,7 @@ func TestAnalyzer_Analyze(t *testing.T) {
 				Exc:               exc,
 				ExcludeGitIgnore:  tt.excludeGitIgnore,
 				GitIgnoreFileName: tt.gitIgnoreFileName,
+				MaxFileSize:       tt.MaxFileSize,
 			}
 
 			got, err := Analyze(analyzer)

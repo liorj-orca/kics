@@ -6,5 +6,7 @@
   "descriptionText": "There is a 'securityDefinition' using implicit flow on OAuth2, which is deprecated",
   "descriptionUrl": "https://swagger.io/specification/v2/#securitySchemeObject",
   "platform": "OpenAPI",
-  "descriptionID": "a879610a"
+  "descriptionID": "a879610a",
+  "cloudProvider": "common",
+  "cwe": "285"
 }
