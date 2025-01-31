@@ -6,6 +6,8 @@
   "descriptionText": "Global security definition must not have empty objects",
   "descriptionUrl": "https://swagger.io/specification/#security-requirement-object",
   "platform": "OpenAPI",
+  "descriptionID": "e2c89bd7",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "292919fb-7b26-4454-bee9-ce29094768dd",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#security-requirement-object"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "e2c89bd7"
+  "cloudProvider": "common",
+  "cwe": "284"
 }

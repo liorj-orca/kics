@@ -6,5 +6,7 @@
   "descriptionText": "Security field should be defined in '#/components/securitySchemes'",
   "descriptionUrl": "https://swagger.io/specification/#security-requirement-object",
   "platform": "OpenAPI",
-  "descriptionID": "2d06cd16"
+  "descriptionID": "2d06cd16",
+  "cloudProvider": "common",
+  "cwe": "20"
 }

@@ -6,6 +6,8 @@
   "descriptionText": "Schema of the JSON object should have properties defined and 'additionalProperties' set to false.",
   "descriptionUrl": "https://swagger.io/specification/#schema-object",
   "platform": "OpenAPI",
+  "descriptionID": "1778714d",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "3d28f751-bc18-4f83-ace0-216b6086410b",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#schemaObject"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "1778714d"
+  "cloudProvider": "common",
+  "cwe": "20"
 }
