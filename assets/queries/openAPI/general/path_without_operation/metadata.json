@@ -6,6 +6,8 @@
   "descriptionText": "Path object should have at least one operation object defined",
   "descriptionUrl": "https://swagger.io/specification/#path-item-object",
   "platform": "OpenAPI",
+  "descriptionID": "089453e7",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "609cd557-66b4-41fa-8edd-2abc6c7cfd08",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#pathItemObject"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "089453e7"
+  "cloudProvider": "common",
+  "cwe": "710"
 }

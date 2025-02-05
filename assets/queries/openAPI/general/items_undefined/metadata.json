@@ -6,6 +6,8 @@
   "descriptionText": "Schema/Parameter items should be defined when the schema/parameter is set to an array.",
   "descriptionUrl": "https://swagger.io/specification/#schema-object",
   "platform": "OpenAPI",
+  "descriptionID": "0d3d1672",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "3e4d34d2-36cf-4449-976d-6c256db8fc49",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#schema-object"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "0d3d1672"
+  "cloudProvider": "common",
+  "cwe": "665"
 }

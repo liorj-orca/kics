@@ -6,6 +6,8 @@
   "descriptionText": "Schema Object Property key should be unique through out the fields 'properties', 'allOf', 'additionalProperties'",
   "descriptionUrl": "https://swagger.io/specification/#schema-object",
   "platform": "OpenAPI",
+  "descriptionID": "898b0e0a",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "ded017bf-fb13-4f8d-868b-84aebcc572ad",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#schemaObject"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "898b0e0a"
+  "cloudProvider": "common",
+  "cwe": "20"
 }

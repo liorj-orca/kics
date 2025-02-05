@@ -6,6 +6,8 @@
   "descriptionText": "Property defining minimum has greater value than maximum defined",
   "descriptionUrl": "https://swagger.io/specification/#schema-object",
   "platform": "OpenAPI",
+  "descriptionID": "48eeea37",
+  "aggregation": 2,
   "override": {
     "2.0": {
       "id": "b5102ea9-6527-4bb7-94fc-9b4076150e55",
@@ -13,6 +15,6 @@
       "descriptionUrl": "https://swagger.io/specification/v2/#schemaObject"
     }
   },
-  "aggregation": 2,
-  "descriptionID": "48eeea37"
+  "cloudProvider": "common",
+  "cwe": "20"
 }

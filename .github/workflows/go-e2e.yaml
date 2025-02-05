@@ -10,21 +10,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: [1.20.x]
+        go-version: [1.23.x]
         os: [ubuntu-latest]
         kics-docker: ["Dockerfile", "docker/Dockerfile.ubi8"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
         with:
           access_token: ${{ github.token }}
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           persist-credentials: false
-      - name: Set up Go 1.20.x
-        uses: actions/setup-go@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
       - name: Print go env
@@ -32,9 +32,9 @@ jobs:
       - name: Get Modules
         run: go mod vendor
       - name: Set up Node v14
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: "14"
+          node-version: "20"
       - name: Install mock server
         run: npm ci
         working-directory: .github/scripts/server-mock
@@ -43,9 +43,9 @@ jobs:
         working-directory: .github/scripts/server-mock
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4 # v3.4.0
       - name: Cache Docker layers
-        uses: actions/cache@v3
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.ref }}
@@ -55,7 +55,7 @@ jobs:
         run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
       - name: Build
         id: docker_build
-        uses: docker/build-push-action@v4.0.0
+        uses: docker/build-push-action@1ca370b3a9802c92e886402e0dd88098a2533b12 # v6.4.1
         with:
           load: true
           context: ./
@@ -82,7 +82,7 @@ jobs:
           E2E_KICS_DOCKER: kics:e2e-tests-${{ github.sha }}
           E2E_KICS_QUERIES_PATH: ${{ steps.getbin.outputs.queries }}
         run: |
-          go test -tags dev "github.com/Checkmarx/kics/e2e" -timeout 1500s -json > results.json
+          go test -tags dev "github.com/Checkmarx/kics/v2/e2e" -timeout 1500s -json > results.json
       - name: Generate E2E Report
         if: always()
         env:
@@ -96,9 +96,10 @@ jobs:
       - name: Get docker name
         run: |
           DOCKER_NAME=$(echo ${{ matrix.kics-docker }} | sed 's/\//-/')
+          echo "DOCKER_NAME=$DOCKER_NAME" >> $GITHUB_ENV
       - name: Archive test report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
-          name: e2e-tests-report-$DOCKER_NAME
+          name: e2e-tests-report-${{ env.DOCKER_NAME }}
           path: e2e-report.html

@@ -6,5 +6,7 @@
   "descriptionText": "All properties defined in OpenAPI objects should be known",
   "descriptionUrl": "https://swagger.io/specification/",
   "platform": "OpenAPI",
-  "descriptionID": "44e287cd"
+  "descriptionID": "44e287cd",
+  "cloudProvider": "common",
+  "cwe": "665"
 }
